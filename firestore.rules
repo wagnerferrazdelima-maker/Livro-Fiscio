@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Lead Validation
+    function isValidLead(data) {
+      return data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 200 &&
+             data.email is string && data.email.size() > 0 && data.email.size() <= 200 &&
+             data.whatsapp is string && data.whatsapp.size() > 0 && data.whatsapp.size() <= 50 &&
+             data.createdAt == request.time;
+    }
+
+    match /leads/{leadId} {
+      allow create: if isValidId(leadId) && 
+                      isValidLead(incoming()) &&
+                      incoming().keys().hasAll(['fullName', 'email', 'whatsapp', 'createdAt']) &&
+                      incoming().keys().size() == 4;
+      
+      // Admins could be configured here later if needed
+      allow read, update, delete: if false; 
+    }
+  }
+}
