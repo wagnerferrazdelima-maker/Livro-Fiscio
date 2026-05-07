@@ -52,7 +52,7 @@ export const CTASection = () => {
           </div>
           
           <div className="relative inline-block group w-full sm:w-auto">
-            <Link to="/checkout" target="_blank" className="block w-full">
+            <Link to="/checkout" className="block w-full">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

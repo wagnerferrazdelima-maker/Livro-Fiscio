@@ -27,10 +27,8 @@ export const CheckoutPage = () => {
         createdAt: serverTimestamp(),
       });
       
-      // Open offers in a new tab as requested
-      window.open('/ofertas', '_blank');
-      // Redirect current page to thank you
-      navigate('/obrigado');
+      // Redirect to offers page in the same tab
+      navigate('/ofertas');
     } catch (error) {
       console.error("Error saving lead:", error);
       alert("Ocorreu um erro. Por favor, tente novamente.");
