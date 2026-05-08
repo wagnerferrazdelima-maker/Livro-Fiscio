@@ -183,7 +183,7 @@ export const OffersPage = () => {
               <motion.div
                 whileTap={product.id !== 'frete' ? { scale: 0.98 } : {}}
                 onClick={() => toggleProduct(product.id)}
-                className={`relative rounded-[2rem] p-6 md:p-8 transition-all border-2 
+                className={`relative rounded-[2rem] p-4 sm:p-6 md:p-8 transition-all border-2 
                   ${selected.includes(product.id) 
                     ? product.isBestChoice ? 'border-[#FF4D00] bg-[#FFF5F0] shadow-[0_0_40px_-10px_rgba(255,77,0,0.15)]' : 'border-[#FF4D00] bg-white' 
                     : 'border-white bg-white hover:border-slate-200'
@@ -192,11 +192,11 @@ export const OffersPage = () => {
                   ${product.id === 'frete' ? 'cursor-default' : 'cursor-pointer'}
                 `}
               >
-                <div className="flex gap-4 md:gap-6">
-                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0 
+                <div className="flex gap-3 sm:gap-4 md:gap-6">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0 
                     ${product.isBestChoice ? 'bg-[#FF4D00]' : 'bg-slate-100'}
                   `}>
-                    <product.icon className={`w-6 h-6 md:w-8 md:h-8 ${product.isBestChoice ? 'text-white' : 'text-slate-400'}`} />
+                    <product.icon className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 ${product.isBestChoice ? 'text-white' : 'text-slate-400'}`} />
                   </div>
 
                   <div className="flex-1">

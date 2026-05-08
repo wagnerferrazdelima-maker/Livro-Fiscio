@@ -49,7 +49,7 @@ export const Hero = () => {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="button-premium text-xl md:text-2xl w-full flex items-center justify-center gap-4 cursor-pointer bg-brand-secondary text-black py-4 px-8"
+                    className="button-premium text-lg sm:text-xl md:text-2xl w-full flex items-center justify-center gap-4 cursor-pointer bg-brand-secondary text-black py-4 px-8"
                   >
                     <BookOpen className="w-6 h-6 md:w-7 md:h-7" />
                     RESGATAR MEU LIVRO FÍSICO AGORA

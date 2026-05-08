@@ -56,7 +56,7 @@ export const CTASection = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-black text-white px-8 md:px-16 py-5 md:py-6 rounded-2xl text-lg md:text-2xl font-black shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] hover:shadow-none transition-all flex items-center justify-center gap-4 cursor-pointer relative z-10 w-full"
+                className="bg-black text-white px-6 sm:px-8 md:px-16 py-5 md:py-6 rounded-2xl text-base sm:text-lg md:text-2xl font-black shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] hover:shadow-none transition-all flex items-center justify-center gap-4 cursor-pointer relative z-10 w-full"
               >
                 RESGATAR MEU LIVRO FÍSICO AGORA
               </motion.button>
