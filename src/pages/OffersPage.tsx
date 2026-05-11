@@ -89,6 +89,15 @@ export const OffersPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Safety Force Refresh:
+    // If the user lands here after checkout and experiences a "blank screen" (common on some mobile browsers),
+    // we force one automatic reload to ensure the SPA router and assets are perfectly synced.
+    const needsRefresh = sessionStorage.getItem('force_refresh_offers');
+    if (needsRefresh === 'true') {
+      sessionStorage.removeItem('force_refresh_offers');
+      window.location.reload();
+    }
   }, []);
 
   const toggleProduct = (id: string) => {
@@ -139,15 +148,14 @@ export const OffersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC]">
+    <div key={window.location.hash} className="min-h-screen bg-[#F7F9FC]">
       {/* Hero Image - Edge to Edge */}
-      <div className="w-full overflow-hidden bg-slate-200">
+      <div className="w-full overflow-hidden bg-slate-200 min-h-[300px] sm:min-h-[400px] relative">
         <img 
           src="https://i.postimg.cc/3wbqDrmk/Gemini-Generated-Image-eta9maeta9maeta9-(1).png" 
           alt="Banner de Ofertas Wagner Ferraz" 
-          className="w-full h-auto object-cover block"
+          className="w-full h-auto object-cover block min-h-[300px] sm:min-h-[400px]"
           referrerPolicy="no-referrer"
-          fetchPriority="high"
           loading="eager"
           onError={(e) => {
             e.currentTarget.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1200";

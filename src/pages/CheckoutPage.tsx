@@ -35,26 +35,46 @@ export const CheckoutPage = () => {
     e.preventDefault();
     if (!isFormValid || isLoading) return;
     
-    // We set loading just to prevent double clicks, but we don't wait for Firestore
     setIsLoading(true);
 
-    // 1. Fire navigation
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    navigate('/ofertas', { replace: true });
-
-    // Background save - decoupled from UI
+    // 1. Background Save
     const leadData = {
       fullName,
       email,
       whatsapp,
-      createdAt: new Date().toISOString(),
       source: 'lead_capture'
     };
 
     addDoc(collection(db, 'leads'), {
       ...leadData,
       createdAt: serverTimestamp()
-    }).catch(e => console.error("Background error:", e));
+    }).catch(e => console.error("Background lead save error:", e));
+
+    // 2. Ultra-Robust Navigation
+    // We use a small delay for visual feedback, then use window.location directly.
+    // In many mobile/webview environments, SPAs (Single Page Apps) can hang during 
+    // internal router navigation if not triggered by a user-initiated event.
+    // By using window.location.href, we force the browser to process the hash change.
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      
+      // Set flag for automatic update/refresh on arrival
+      sessionStorage.setItem('force_refresh_offers', 'true');
+      
+      // We use '#/ofertas' explicitly for HashRouter compatibility
+      const targetUrl = '#/ofertas';
+      
+      // Attempt 1: Standard location change
+      window.location.href = targetUrl;
+
+      // Attempt 2: Safety check after a split second
+      setTimeout(() => {
+        if (!window.location.hash.includes('ofertas')) {
+          console.log("Forced navigation retry...");
+          window.location.replace(targetUrl);
+        }
+      }, 500);
+    }, 200);
   };
 
   return (
