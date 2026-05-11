@@ -140,27 +140,21 @@ export const OffersPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F9FC]">
-      {/* Preload critical hero image */}
-      <link rel="preload" as="image" href="https://i.postimg.cc/3wbqDrmk/Gemini-Generated-Image-eta9maeta9maeta9-(1).png" />
-      
       {/* Hero Image - Edge to Edge */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-full overflow-hidden"
-      >
+      <div className="w-full overflow-hidden bg-slate-200 aspect-[16/9] sm:aspect-auto">
         <img 
           src="https://i.postimg.cc/3wbqDrmk/Gemini-Generated-Image-eta9maeta9maeta9-(1).png" 
           alt="Banner de Ofertas Wagner Ferraz" 
           className="w-full h-auto object-cover block"
           referrerPolicy="no-referrer"
-          priority="high"
+          // @ts-ignore
+          fetchpriority="high"
+          loading="eager"
           onError={(e) => {
             e.currentTarget.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1200";
           }}
         />
-      </motion.div>
+      </div>
 
       <AnimatePresence>
         {showFreeShippingToast && (
@@ -183,9 +177,8 @@ export const OffersPage = () => {
       <div className="max-w-5xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <motion.h1 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="text-[#FF4D00] font-black text-2xl sm:text-3xl md:text-5xl tracking-tighter uppercase mb-2 italic"
           >
             APROVEITE TODOS PRODUTOS
@@ -193,7 +186,6 @@ export const OffersPage = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
             className="text-slate-500 font-bold tracking-[0.3em] uppercase text-xs sm:text-sm mb-12"
           >
             Oferta Exclusiva e Limitada

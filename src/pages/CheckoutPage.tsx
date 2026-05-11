@@ -33,39 +33,48 @@ export const CheckoutPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || isLoading) return;
+    
+    // We set loading just to prevent double clicks, but we don't wait for Firestore
     setIsLoading(true);
 
-    // 1. Fire navigation immediately for perceived instant speed
-    window.scrollTo(0, 0);
-    navigate('/ofertas', { replace: true });
-
-    // 2. Save lead in the background - don't block the user
-    // We don't await this to ensure the 2-3s window is met easily
-    const leadPromise = addDoc(collection(db, 'leads'), {
+    // 1. Fire navigation IMMEDIATELY - no delays
+    // Using both scroll methods for maximum reliability across devices
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    
+    // Background save - decoupled from UI lifecycle
+    const leadData = {
       fullName,
       email,
       whatsapp,
-      createdAt: serverTimestamp(),
-    });
+      createdAt: new Date().toISOString(), // Use iso string if serverTimestamp is flaky in background
+      source: 'lead_capture'
+    };
 
-    leadPromise
-      .then(() => console.log("Lead saved in background"))
-      .catch((error) => console.error("Background lead save failed:", error))
-      .finally(() => {
-        // We keep the loader state potentially for a split second if needed, 
-        // but navigation usually unmounts this anyway.
-        setIsLoading(false);
-      });
+    // Use try/catch but don't await
+    try {
+      addDoc(collection(db, 'leads'), {
+        ...leadData,
+        createdAt: serverTimestamp()
+      }).catch(e => console.error("Background error:", e));
+    } catch (e) {
+      console.error("Critical background error:", e);
+    }
 
-    // 3. Robust HashRouter Fallback (Executes faster than before)
+    // 2. Perform navigation
+    navigate('/ofertas', { replace: true });
+
+    // 3. Ultra-fast fallback for mobile browsers where SPA navigation might hang
+    // We use a small timeout to let the React render cycle finish first
     setTimeout(() => {
-      const currentPath = window.location.hash || window.location.pathname;
-      if (!currentPath.includes('ofertas')) {
-        console.log("Forcing navigation to /ofertas");
+      const isStillOnCheckout = window.location.hash.includes('checkout') || 
+                               window.location.pathname.includes('checkout');
+      
+      if (isStillOnCheckout) {
+        console.log("Forcing layout refresh for navigation");
         window.location.hash = '#/ofertas';
       }
-    }, 300);
+    }, 150);
   };
 
   return (
