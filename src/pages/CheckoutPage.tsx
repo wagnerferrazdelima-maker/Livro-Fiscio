@@ -38,43 +38,23 @@ export const CheckoutPage = () => {
     // We set loading just to prevent double clicks, but we don't wait for Firestore
     setIsLoading(true);
 
-    // 1. Fire navigation IMMEDIATELY - no delays
-    // Using both scroll methods for maximum reliability across devices
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-    
-    // Background save - decoupled from UI lifecycle
+    // 1. Fire navigation
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate('/ofertas', { replace: true });
+
+    // Background save - decoupled from UI
     const leadData = {
       fullName,
       email,
       whatsapp,
-      createdAt: new Date().toISOString(), // Use iso string if serverTimestamp is flaky in background
+      createdAt: new Date().toISOString(),
       source: 'lead_capture'
     };
 
-    // Use try/catch but don't await
-    try {
-      addDoc(collection(db, 'leads'), {
-        ...leadData,
-        createdAt: serverTimestamp()
-      }).catch(e => console.error("Background error:", e));
-    } catch (e) {
-      console.error("Critical background error:", e);
-    }
-
-    // 2. Perform navigation
-    navigate('/ofertas', { replace: true });
-
-    // 3. Ultra-fast fallback for mobile browsers where SPA navigation might hang
-    // We use a small timeout to let the React render cycle finish first
-    setTimeout(() => {
-      const isStillOnCheckout = window.location.hash.includes('checkout') || 
-                               window.location.pathname.includes('checkout');
-      
-      if (isStillOnCheckout) {
-        console.log("Forcing layout refresh for navigation");
-        window.location.hash = '#/ofertas';
-      }
-    }, 150);
+    addDoc(collection(db, 'leads'), {
+      ...leadData,
+      createdAt: serverTimestamp()
+    }).catch(e => console.error("Background error:", e));
   };
 
   return (

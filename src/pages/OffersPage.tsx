@@ -141,14 +141,13 @@ export const OffersPage = () => {
   return (
     <div className="min-h-screen bg-[#F7F9FC]">
       {/* Hero Image - Edge to Edge */}
-      <div className="w-full overflow-hidden bg-slate-200 aspect-[16/9] sm:aspect-auto">
+      <div className="w-full overflow-hidden bg-slate-200">
         <img 
           src="https://i.postimg.cc/3wbqDrmk/Gemini-Generated-Image-eta9maeta9maeta9-(1).png" 
           alt="Banner de Ofertas Wagner Ferraz" 
           className="w-full h-auto object-cover block"
           referrerPolicy="no-referrer"
-          // @ts-ignore
-          fetchpriority="high"
+          fetchPriority="high"
           loading="eager"
           onError={(e) => {
             e.currentTarget.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1200";
