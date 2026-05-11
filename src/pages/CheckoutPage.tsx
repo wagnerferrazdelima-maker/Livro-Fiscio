@@ -31,42 +31,41 @@ export const CheckoutPage = () => {
   const isWhatsappValid = digits.length === 11 && !isRepeated(digits);
   const isFormValid = fullName.trim().length >= 3 && email.includes('@') && isWhatsappValid;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) return;
     setIsLoading(true);
 
-    try {
-      console.log("Starting lead save for:", email);
-      await addDoc(collection(db, 'leads'), {
-        fullName,
-        email,
-        whatsapp,
-        createdAt: serverTimestamp(),
+    // 1. Fire navigation immediately for perceived instant speed
+    window.scrollTo(0, 0);
+    navigate('/ofertas', { replace: true });
+
+    // 2. Save lead in the background - don't block the user
+    // We don't await this to ensure the 2-3s window is met easily
+    const leadPromise = addDoc(collection(db, 'leads'), {
+      fullName,
+      email,
+      whatsapp,
+      createdAt: serverTimestamp(),
+    });
+
+    leadPromise
+      .then(() => console.log("Lead saved in background"))
+      .catch((error) => console.error("Background lead save failed:", error))
+      .finally(() => {
+        // We keep the loader state potentially for a split second if needed, 
+        // but navigation usually unmounts this anyway.
+        setIsLoading(false);
       });
-      console.log("Lead saved successfully, navigating to offers...");
-      
-      // Navigate to offers page
-      window.scrollTo(0, 0);
-      navigate('/ofertas');
-      
-      // Small safety fallback for some routing environments
-      setTimeout(() => {
-        if (window.location.hash !== '#/ofertas' && window.location.pathname !== '/ofertas') {
-          console.log("Manual navigation fallback triggered");
-          window.location.hash = '/ofertas';
-        }
-      }, 1000);
-      
-    } catch (error) {
-      console.error("Firestore Error details: ", error);
-      
-      // Fallback: Proceed even on error
-      window.scrollTo(0, 0);
-      navigate('/ofertas');
-    } finally {
-      setIsLoading(false);
-    }
+
+    // 3. Robust HashRouter Fallback (Executes faster than before)
+    setTimeout(() => {
+      const currentPath = window.location.hash || window.location.pathname;
+      if (!currentPath.includes('ofertas')) {
+        console.log("Forcing navigation to /ofertas");
+        window.location.hash = '#/ofertas';
+      }
+    }, 300);
   };
 
   return (
