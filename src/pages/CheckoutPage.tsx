@@ -37,44 +37,29 @@ export const CheckoutPage = () => {
     
     setIsLoading(true);
 
-    // 1. Background Save
-    const leadData = {
+    // 1. Background Save (non-blocking)
+    addDoc(collection(db, 'leads'), {
       fullName,
       email,
       whatsapp,
+      createdAt: serverTimestamp(),
       source: 'lead_capture'
-    };
+    }).catch(e => console.error("Lead save error:", e));
 
-    addDoc(collection(db, 'leads'), {
-      ...leadData,
-      createdAt: serverTimestamp()
-    }).catch(e => console.error("Background lead save error:", e));
+    // 2. Perform Navigation
+    // We use navigate for the SPA speed, but a hard fallback for mobile stability.
+    sessionStorage.setItem('last_nav_time', Date.now().toString());
+    navigate('/ofertas');
 
-    // 2. Ultra-Robust Navigation
-    // We use a small delay for visual feedback, then use window.location directly.
-    // In many mobile/webview environments, SPAs (Single Page Apps) can hang during 
-    // internal router navigation if not triggered by a user-initiated event.
-    // By using window.location.href, we force the browser to process the hash change.
+    // mobile stabilization: some browsers hang during SPA transitions
     setTimeout(() => {
-      window.scrollTo(0, 0);
-      
-      // Set flag for automatic update/refresh on arrival
-      sessionStorage.setItem('force_refresh_offers', 'true');
-      
-      // We use '#/ofertas' explicitly for HashRouter compatibility
-      const targetUrl = '#/ofertas';
-      
-      // Attempt 1: Standard location change
-      window.location.href = targetUrl;
-
-      // Attempt 2: Safety check after a split second
-      setTimeout(() => {
-        if (!window.location.hash.includes('ofertas')) {
-          console.log("Forced navigation retry...");
-          window.location.replace(targetUrl);
-        }
-      }, 500);
-    }, 200);
+      const currentPath = window.location.hash || window.location.pathname;
+      if (currentPath.includes('checkout')) {
+        // Hard swap if SPA navigation didn't take
+        window.location.href = '#/ofertas';
+        window.location.reload(); 
+      }
+    }, 400);
   };
 
   return (
