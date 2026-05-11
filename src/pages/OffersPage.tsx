@@ -120,7 +120,16 @@ export const OffersPage = () => {
     const selectedProducts = products.filter(p => selected.includes(p.id));
     const total = calculateTotal();
     
-    let message = `Olá! Gostaria de fazer meu pedido:\n\n`;
+    // Get user data from sessionStorage
+    const userName = sessionStorage.getItem('user_full_name') || 'Cliente';
+    const userEmail = sessionStorage.getItem('user_email') || 'Não informado';
+    const userPhone = sessionStorage.getItem('user_whatsapp') || '';
+
+    let message = `🚀 *NOVO PEDIDO CONFIRMADO*\n\n`;
+    message += `👤 *CLIENTE:* ${userName}\n`;
+    message += `📧 *E-MAIL:* ${userEmail}\n`;
+    message += `📱 *WHATSAPP:* ${userPhone}\n\n`;
+    
     message += `🛒 *ÍTENS SELECIONADOS:*\n`;
     selectedProducts.forEach(p => {
       if (isComboSelected && p.id === 'frete') {
@@ -129,9 +138,10 @@ export const OffersPage = () => {
         message += `- ${p.title} (${p.newPriceText})\n`;
       }
     });
+
     message += `\n💰 *TOTAL:* R$ ${total}`;
     message += `\n💳 *FORMA DE PAGAMENTO:* Pix ou Cartão de Crédito`;
-    message += `\n\nAguardo instruções para o pagamento!`;
+    message += `\n\nFavor enviar o link ou chave de pagamento! 🎯`;
 
     const encodedMessage = encodeURIComponent(message);
     const phoneNumber = "5569992294953"; // Wagner Ferraz Oficial

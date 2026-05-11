@@ -46,6 +46,11 @@ export const CheckoutPage = () => {
       source: 'lead_capture'
     }).catch(e => console.error("Lead save error:", e));
 
+    // Store in session to use on next page
+    sessionStorage.setItem('user_full_name', fullName);
+    sessionStorage.setItem('user_email', email);
+    sessionStorage.setItem('user_whatsapp', whatsapp);
+
     // 2. Direct hard navigation to bypass any SPA routing issues on mobile
     // This also fulfills the "update automatically" request by forcing a fresh page load.
     // 300ms is enough to ensure the network request for lead capture is dispatched.
