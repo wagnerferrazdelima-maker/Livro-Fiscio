@@ -37,26 +37,33 @@ export const CheckoutPage = () => {
     setIsLoading(true);
 
     try {
-      console.log("Starting lead save...");
+      console.log("Starting lead save for:", email);
       await addDoc(collection(db, 'leads'), {
         fullName,
         email,
         whatsapp,
         createdAt: serverTimestamp(),
       });
-      console.log("Lead saved successfully, navigating...");
+      console.log("Lead saved successfully, navigating to offers...");
       
-      // Navigate to offers page using relative path for robustness
+      // Navigate to offers page
       window.scrollTo(0, 0);
-      navigate('../ofertas', { replace: true });
+      navigate('/ofertas');
+      
+      // Small safety fallback for some routing environments
+      setTimeout(() => {
+        if (window.location.hash !== '#/ofertas' && window.location.pathname !== '/ofertas') {
+          console.log("Manual navigation fallback triggered");
+          window.location.hash = '/ofertas';
+        }
+      }, 1000);
+      
     } catch (error) {
       console.error("Firestore Error details: ", error);
       
-      // Fallback: if Firestore fails (like quota exceeded), let the user buy anyway!
-      // This ensures the sales funnel stays open even if data logging fails.
-      console.log("Proceeding to offers despite Firestore error...");
+      // Fallback: Proceed even on error
       window.scrollTo(0, 0);
-      navigate('../ofertas', { replace: true });
+      navigate('/ofertas');
     } finally {
       setIsLoading(false);
     }
