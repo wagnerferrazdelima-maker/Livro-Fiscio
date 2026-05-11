@@ -12,7 +12,24 @@ export const CheckoutPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const isFormValid = fullName.trim().length >= 3 && email.includes('@') && whatsapp.replace(/\D/g, '').length >= 10;
+  const maskPhone = (value: string) => {
+    let v = value.replace(/\D/g, "");
+    if (v.length > 11) v = v.substring(0, 11);
+
+    if (v.length === 0) return "";
+    if (v.length <= 2) return `(${v}`;
+    if (v.length <= 3) return `(${v.substring(0, 2)})${v.substring(2)}`;
+    if (v.length <= 7) return `(${v.substring(0, 2)})${v.substring(2, 3)} ${v.substring(3)}`;
+    return `(${v.substring(0, 2)})${v.substring(2, 3)} ${v.substring(3, 7)}-${v.substring(7)}`;
+  };
+
+  const isRepeated = (v: string) => {
+    return v.length > 0 && v.split('').every(char => char === v[0]);
+  };
+
+  const digits = whatsapp.replace(/\D/g, '');
+  const isWhatsappValid = digits.length === 11 && !isRepeated(digits);
+  const isFormValid = fullName.trim().length >= 3 && email.includes('@') && isWhatsappValid;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,18 +37,26 @@ export const CheckoutPage = () => {
     setIsLoading(true);
 
     try {
+      console.log("Starting lead save...");
       await addDoc(collection(db, 'leads'), {
         fullName,
         email,
         whatsapp,
         createdAt: serverTimestamp(),
       });
+      console.log("Lead saved successfully, navigating...");
       
-      // Redirect to offers page in the same tab
-      navigate('/ofertas');
+      // Navigate to offers page using relative path for robustness
+      window.scrollTo(0, 0);
+      navigate('../ofertas', { replace: true });
     } catch (error) {
-      console.error("Error saving lead:", error);
-      alert("Ocorreu um erro. Por favor, tente novamente.");
+      console.error("Firestore Error details: ", error);
+      
+      // Fallback: if Firestore fails (like quota exceeded), let the user buy anyway!
+      // This ensures the sales funnel stays open even if data logging fails.
+      console.log("Proceeding to offers despite Firestore error...");
+      window.scrollTo(0, 0);
+      navigate('../ofertas', { replace: true });
     } finally {
       setIsLoading(false);
     }
@@ -102,13 +127,14 @@ export const CheckoutPage = () => {
               <input 
                 required
                 type="tel" 
-                pattern=".{10,}"
-                title="Mínimo 10 dígitos"
                 value={whatsapp}
-                onChange={(e) => setWhatsapp(e.target.value)}
-                placeholder="(00) 00000-0000"
+                onChange={(e) => setWhatsapp(maskPhone(e.target.value))}
+                placeholder="(00)0 0000-0000"
                 className="w-full pl-12 pr-4 py-4 bg-black/5 border-transparent focus:border-brand-secondary focus:bg-white rounded-2xl transition-all outline-none text-black font-medium"
               />
+              {digits.length > 0 && isRepeated(digits) && (
+                <p className="text-red-500 text-[10px] mt-1 ml-1 font-bold">Número inválido (não use apenas números repetidos)</p>
+              )}
             </div>
           </div>
 

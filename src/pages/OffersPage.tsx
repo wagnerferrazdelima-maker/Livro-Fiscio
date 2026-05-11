@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Mic2, 
@@ -28,7 +28,7 @@ const products: Product[] = [
   {
     id: 'mesa',
     title: '🌿 TREINAMENTO DIGITAL: MESA COM PROPÓSITO',
-    description: 'By Katia Ferraz ✨. Transforme a mesa de sua casa em um ambiente de conexão, ensino e legado 💒. Aprenda a liderar o destino emocional e espiritual da sua família, construindo memórias eternas. 🌿',
+    description: 'By Katia Ferraz ✨. Transforme a mesa de sua casa em um ambiente de conexão, ensino e legado 💒. Aprenda a liderar o destino emocional e espiritual da sua família, construindo memórias eternas. 🌿\n\n📖 LIVRO DIGITAL PDF',
     oldPrice: 'R$ 37,00',
     newPriceText: '+ R$ 10,00',
     priceValue: 10.00,
@@ -64,7 +64,7 @@ const products: Product[] = [
   },
   {
     id: 'curso',
-    title: '🎓 CURSO GRAVADO: CRIANDO FILHOS FORTES',
+    title: '🎥 🎓 CURSO GRAVADO: CRIANDO FILHOS FORTES',
     description: 'Forme filhos resilientes com 18 aulas práticas (média de 5 min) e 5 módulos completos 🎓. Estratégias reais para fortalecer o comportamento e a segurança emocional sem gritos ou culpa. 🔥',
     oldPrice: 'R$ 297,00',
     newPriceText: '+ R$ 97,00',
@@ -86,6 +86,10 @@ const products: Product[] = [
 export const OffersPage = () => {
   const [selected, setSelected] = useState<string[]>(['mesa', 'frete']);
   const [showFreeShippingToast, setShowFreeShippingToast] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleProduct = (id: string) => {
     if (id === 'frete') return; // Shipping is mandatory
@@ -135,7 +139,25 @@ export const OffersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] py-12 px-4">
+    <div className="min-h-screen bg-[#F7F9FC]">
+      {/* Hero Image - Edge to Edge */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="w-full overflow-hidden"
+      >
+        <img 
+          src="https://i.postimg.cc/3wbqDrmk/Gemini-Generated-Image-eta9maeta9maeta9-(1).png" 
+          alt="Banner de Ofertas Wagner Ferraz" 
+          className="w-full h-auto object-cover block"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            e.currentTarget.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1200";
+          }}
+        />
+      </motion.div>
+
       <AnimatePresence>
         {showFreeShippingToast && (
           <motion.div
@@ -154,14 +176,27 @@ export const OffersPage = () => {
         )}
       </AnimatePresence>
 
-      <div className="max-w-xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-[#FF4D00] font-black text-xl sm:text-2xl md:text-3xl tracking-tight uppercase mb-8">
-            APROVEITE TODOS PRODUTOS EM OFERTA
-          </h1>
+      <div className="max-w-5xl mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-[#FF4D00] font-black text-2xl sm:text-3xl md:text-5xl tracking-tighter uppercase mb-2 italic"
+          >
+            APROVEITE TODOS PRODUTOS
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-slate-500 font-bold tracking-[0.3em] uppercase text-xs sm:text-sm mb-12"
+          >
+            Oferta Exclusiva e Limitada
+          </motion.p>
         </div>
 
-        <div className="space-y-6">
+        <div className="max-w-xl mx-auto space-y-6">
           {products.map((product) => (
             <div key={product.id} className="relative">
               {product.isBestChoice && (
