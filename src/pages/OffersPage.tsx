@@ -89,22 +89,6 @@ export const OffersPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    // Safety Force Refresh:
-    // Some mobile browsers experience "zombie states" or blank screens on SPA navigation.
-    // This ensures that if we land here from checkout, we get a fresh render cycle.
-    const lastVisit = sessionStorage.getItem('last_nav_time') || '0';
-    const now = Date.now();
-    
-    // If it's been less than 2 seconds since we were on checkout (approx),
-    // and we haven't refreshed yet, do it once.
-    if (now - parseInt(lastVisit) < 2000 && !sessionStorage.getItem('offers_refreshed')) {
-      sessionStorage.setItem('offers_refreshed', 'true');
-      window.location.reload();
-    } else {
-      // Clear flag after a while
-      setTimeout(() => sessionStorage.removeItem('offers_refreshed'), 5000);
-    }
   }, []);
 
   const toggleProduct = (id: string) => {

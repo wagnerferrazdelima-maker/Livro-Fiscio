@@ -36,8 +36,8 @@ export const CheckoutPage = () => {
     if (!isFormValid || isLoading) return;
     
     setIsLoading(true);
-
-    // 1. Background Save (non-blocking)
+    
+    // 1. Hard Save in background (don't wait)
     addDoc(collection(db, 'leads'), {
       fullName,
       email,
@@ -46,20 +46,14 @@ export const CheckoutPage = () => {
       source: 'lead_capture'
     }).catch(e => console.error("Lead save error:", e));
 
-    // 2. Perform Navigation
-    // We use navigate for the SPA speed, but a hard fallback for mobile stability.
-    sessionStorage.setItem('last_nav_time', Date.now().toString());
-    navigate('/ofertas');
-
-    // mobile stabilization: some browsers hang during SPA transitions
+    // 2. Direct hard navigation to bypass any SPA routing issues on mobile
+    // This also fulfills the "update automatically" request by forcing a fresh page load.
+    // 300ms is enough to ensure the network request for lead capture is dispatched.
     setTimeout(() => {
-      const currentPath = window.location.hash || window.location.pathname;
-      if (currentPath.includes('checkout')) {
-        // Hard swap if SPA navigation didn't take
-        window.location.href = '#/ofertas';
-        window.location.reload(); 
-      }
-    }, 400);
+      window.scrollTo(0, 0);
+      window.location.hash = '/ofertas';
+      window.location.reload();
+    }, 300);
   };
 
   return (
